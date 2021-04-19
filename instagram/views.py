@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import NewUserForm
+from .forms import NewUserForm, NewPostForm
 from django.contrib.auth import login
 from django.contrib import messages
 
@@ -24,3 +24,19 @@ def register(request):
     else:
         form = NewUserForm
     return render(request, template_name='instagram/register.html', context={'register_form': form})
+
+
+def new_post(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            new_post_form = NewPostForm(request.POST, request.FILES)
+            if new_post_form.is_valid():
+                new_post_form.save()
+                messages.success(request, "Your post was successfully published.")
+                return redirect('activity_feed')
+        else:
+            new_post_form = NewPostForm
+    else:
+        return redirect('login_page')
+    return render(request, template_name='instagram/new_post.html', context={'new_post_form': new_post_form})
+

@@ -31,7 +31,9 @@ def new_post(request):
         if request.method == 'POST':
             new_post_form = NewPostForm(request.POST, request.FILES)
             if new_post_form.is_valid():
-                new_post_form.save()
+                post = new_post_form.save(commit=False)
+                post.publisher = request.user
+                post.save()
                 messages.success(request, "Your post was successfully published.")
                 return redirect('activity_feed')
         else:

@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from instagram import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +27,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='instagram/logout_page.html'), name='logout_page'),
     path('register/', views.register, name='register'),
     path('new/', views.new_post, name='new_post'),
+    path('profile/', views.profile, name='profile'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

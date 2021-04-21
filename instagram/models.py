@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class Posts(models.Model):
-    picture = models.ImageField(upload_to='posts')
+    picture = models.ImageField(upload_to='posts/')
     caption = models.TextField()
     likes = models.IntegerField(default=0)
     date_posted = models.DateTimeField(default=timezone.now)

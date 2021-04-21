@@ -1,0 +1,22 @@
+{% extends 'instagram/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+    <div class="border p-4 m-4">
+        <div class="row">
+            <div class="container-fluid">
+                <h2>{{ user }}'s Profile</h2><p class="small">Edit Profile</p>
+            </div>
+        </div>
+    </div>
+    <div class="border p-4 m-4">
+        <div class="row">
+            {% for post in posts reversed %}
+            <div class="col-4">
+                <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
+                <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

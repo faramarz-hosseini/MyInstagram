@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import NewUserForm, NewPostForm
 from django.contrib.auth import login
 from django.contrib import messages
+from instagram.models import Posts
 
 
 # Create your views here.
@@ -41,4 +42,14 @@ def new_post(request):
     else:
         return redirect('login_page')
     return render(request, template_name='instagram/new_post.html', context={'new_post_form': new_post_form})
+
+
+def profile(request):
+    if request.user.is_authenticated:
+        context = {
+            'posts': Posts.objects.all(),
+        }
+        return render(request, template_name='instagram/profile.html', context=context)
+    else:
+        return redirect('login_page')
 

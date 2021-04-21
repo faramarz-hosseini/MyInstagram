@@ -47,9 +47,7 @@ def new_post(request):
 
 def profile(request):
     if request.user.is_authenticated:
-        context = {
-            'posts': Posts.objects.all(),
-        }
+        context = {'posts': request.user.posts_set.all()}
         return render(request, template_name='instagram/profile.html', context=context)
     else:
         return redirect('login_page')

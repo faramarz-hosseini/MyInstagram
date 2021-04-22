@@ -1,12 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import NewUserForm, NewPostForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from instagram.models import Posts
-
+from instagram.models import User
 
 # Create your views here.
+
 
 def activity_feed(request):
     if request.user.is_authenticated:
@@ -45,9 +47,15 @@ def new_post(request):
     return render(request, template_name='instagram/new_post.html', context={'new_post_form': new_post_form})
 
 
-def profile(request):
+def profile(request, username):
     if request.user.is_authenticated:
-        context = {'posts': request.user.posts_set.all()}
+        user = User.objects.filter(username=username).first()
+        if user is None:
+            pass#404
+        posts = Posts.objects.filter(publisher=user)
+        context = {'posts': posts,
+                   'username': user,
+                   }
         return render(request, template_name='instagram/profile.html', context=context)
     else:
         return redirect('login_page')

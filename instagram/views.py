@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from .forms import NewUserForm, NewPostForm
 from django.contrib.auth import update_session_auth_hash
@@ -47,18 +48,16 @@ def new_post(request):
     return render(request, template_name='instagram/new_post.html', context={'new_post_form': new_post_form})
 
 
+@login_required()
 def profile(request, username):
-    if request.user.is_authenticated:
-        user = User.objects.filter(username=username).first()
-        if user is None:
-            pass#404
-        posts = Posts.objects.filter(publisher=user)
-        context = {'posts': posts,
-                   'username': user,
-                   }
-        return render(request, template_name='instagram/profile.html', context=context)
-    else:
-        return redirect('login_page')
+    user = User.objects.filter(username=username).first()
+    if user is None:
+        return HttpResponseNotFound('<h1> This user does not exist.</h1>')
+    posts = Posts.objects.filter(publisher=user)
+    context = {'posts': posts,
+               'username': user,
+               }
+    return render(request, template_name='instagram/profile.html', context=context)
 
 
 def change_password(request):

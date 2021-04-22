@@ -6,7 +6,9 @@
         <div class="row">
             <div class="container-fluid">
                 <h2>{{ username }}'s Profile</h2>
-                <small><a href="{% url 'new_pass' %}">Change Password</a></small>
+                {% if request.user == username %}
+                    <small><a href="{% url 'new_pass' %}">Change Password</a></small>
+                {% endif %}
             </div>
         </div>
     </div>

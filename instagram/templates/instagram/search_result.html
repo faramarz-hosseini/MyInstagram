@@ -1,37 +1,14 @@
 {% extends 'instagram/base.html' %}
 {% load crispy_forms_tags %}
 {% block sidebar %}
-<nav class="navbar navbar-expand-md navbar-dark" style="background-color: #490030;">
-  <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'activity_feed' %}">Definitely Not Instagram</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav md-auto">
-          {% if user.is_authenticated %}
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'profile' user.username %}">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'new_post' %}">+New Photo</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout_page' %}">Logout</a>
-          </li>
-          {% endif %}
-        </ul>
-        <div class="navbar-nav mx-auto" style="margin-right: 0 !important">
-            <form class="form-inline d-flex" method="POST">
-                {% csrf_token %}
-                {{ user_search_form|crispy }}
-                <input type="submit" value="Submit">
-            </form>
+    <div class="navbar-nav mx-auto" style="margin-right: 0 !important">
+        <form class="form-inline d-flex" method="POST">
+            {% csrf_token %}
+            {{ user_search_form|crispy }}
+            <input type="submit" value="Search">
+        </form>
 
-        </div>
-      </div>
-  </div>
-</nav>
+    </div>
 {% endblock %}
 {% block content %}
     <div class="row">
@@ -41,11 +18,15 @@
                 <div class="border mt-5 container-fluid rounded-3 p-5">
                     <span style="color: black">
                         <ul>
-                            {% for user in matched_users %}
-                             <li>
-                                 <p><a href="{% url 'profile' user.username %}" style="color: #490030"> {{ user.username }}</a></p>
-                            </li>
-                            {% endfor %}
+                            {% if matched_users == 'No user was found!' %}
+                                <p style="color: #490030">{{ matched_users }}</p>
+                            {% else %}
+                                {% for user in matched_users %}
+                                 <li>
+                                     <p><a href="{% url 'profile' user.username %}" style="color: #490030"> {{ user.username }}</a></p>
+                                </li>
+                                {% endfor %}
+                            {% endif %}
                         </ul>
                     </span>
                 </div>

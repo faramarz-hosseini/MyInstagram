@@ -17,7 +17,15 @@ def activity_feed(request):
             user_search_form = UserSearchForm(request.POST)
             if user_search_form.is_valid():
                 matched_users = User.objects.filter(username__icontains=user_search_form.cleaned_data.get("search_user"))
-                return render(request, 'instagram/search_result.html', {"matched_users": matched_users, "user_search_form": user_search_form})
+                context = {
+                    "matched_users": matched_users,
+                    "user_search_form": user_search_form,
+                }
+
+                if not matched_users:
+                    context['matched_users'] = 'No user was found!'
+
+                return render(request, 'instagram/search_result.html', context)
         else:
             user_search_form = UserSearchForm(initial={'search_user': 'Enter Username...'})
 

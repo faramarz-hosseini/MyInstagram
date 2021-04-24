@@ -11,7 +11,6 @@
         <title>MyInstagram</title>
     {% endif %}
 </head>
-{% block sidebar %}
 <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #490030;">
   <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'activity_feed' %}">Definitely Not Instagram</a>
@@ -33,9 +32,10 @@
           {% endif %}
         </ul>
       </div>
+      {% block sidebar %}
+      {% endblock %}
   </div>
 </nav>
-{% endblock %}
 <main role="main">
     {% if messages %}
         {% for message in messages %}

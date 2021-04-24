@@ -18,3 +18,6 @@ class NewPostForm(forms.ModelForm):
         model = Posts
         fields = ['picture', 'caption']
 
+
+class UserSearchForm(forms.Form):
+    search_user = forms.CharField(label="", max_length=100)

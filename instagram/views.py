@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
-from .forms import NewUserForm, NewPostForm
+from .forms import NewUserForm, NewPostForm, UserSearchForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
@@ -13,7 +13,19 @@ from instagram.models import User
 
 def activity_feed(request):
     if request.user.is_authenticated:
-        return render(request, template_name='instagram/activity_feed.html', context={'title': 'Home!'})
+        if request.method == 'POST':
+            user_search_form = UserSearchForm(request.POST)
+            if user_search_form.is_valid():
+                matched_users = User.objects.filter(username__icontains=user_search_form.cleaned_data.get("search_user"))
+                return render(request, 'instagram/search_result.html', {"matched_users": matched_users, "user_search_form": user_search_form})
+        else:
+            user_search_form = UserSearchForm(initial={'search_user': 'Enter Username...'})
+
+        return render(
+            request,
+            template_name='instagram/activity_feed.html',
+            context={'title': 'Home!', 'user_search_form': user_search_form}
+        )
     else:
         return redirect('login_page')
 

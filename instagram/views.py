@@ -5,8 +5,7 @@ from .forms import NewUserForm, NewPostForm, UserSearchForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from instagram.models import Posts
-from instagram.models import User
+from instagram.models import User, Posts, Profile
 
 # Create your views here.
 
@@ -44,6 +43,9 @@ def register(request):
         if form.is_valid():
             form.save()
             user_name = form.cleaned_data['username']
+            user = User.objects.filter(username=user_name).first()
+            user_profile = Profile.objects.create(user=user)
+            user_profile.save()
             messages.success(request, f"An account was successfully created for {user_name}. Log in below.")
             return redirect('login_page')
     else:
@@ -74,12 +76,15 @@ def profile(request, username):
     if user is None:
         return HttpResponseNotFound('<h1> This user does not exist.</h1>')
     posts = Posts.objects.filter(publisher=user)
+    profile_info = Profile.objects.filter(user=user).first()
     context = {'posts': posts,
                'username': user,
+               'profile_info': profile_info
                }
     return render(request, template_name='instagram/profile.html', context=context)
 
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -91,4 +96,18 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, template_name='instagram/new_password.html', context={'form': form})
+
+
+@login_required
+def change_visibility(request):
+    profile_info = Profile.objects.filter(user=request.user).first()
+    if profile_info.is_public:
+        profile_info.is_public = False
+        messages.success(request, 'Your profile visibility was successfully changed to private.')
+    else:
+        profile_info.is_public = True
+        messages.success(request, 'Your profile visibility was successfully changed to public.')
+    profile_info.save()
+    return redirect('activity_feed')
+
 

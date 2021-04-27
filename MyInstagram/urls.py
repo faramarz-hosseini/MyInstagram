@@ -27,6 +27,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='instagram/login_page.html'), name="login_page"),
     path('logout/', auth_views.LogoutView.as_view(template_name='instagram/logout_page.html'), name='logout_page'),
     path('new_password/', views.change_password, name='new_pass'),
+    path('cv/', views.change_visibility, name='change_visibility'),
     path('register/', views.register, name='register'),
     path('new/', views.new_post, name='new_post'),
     path('profile/<str:username>', views.profile, name='profile'),

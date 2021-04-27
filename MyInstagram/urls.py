@@ -15,14 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 from instagram import views
+from instagram.views import RegisterView, NewPostView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.activity_feed, name='activity_feed'),
     path('login/', auth_views.LoginView.as_view(template_name='instagram/login_page.html'), name="login_page"),
     path('logout/', auth_views.LogoutView.as_view(template_name='instagram/logout_page.html'), name='logout_page'),
-    path('register/', views.register, name='register'),
-    path('new/', views.new_post, name='new_post'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('new/', login_required(NewPostView.as_view()), name='new_post'),
 ]

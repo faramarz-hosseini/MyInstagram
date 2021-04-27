@@ -23,5 +23,5 @@ urlpatterns = [
     path('', views.activity_feed, name='activity_feed'),
     path('login/', auth_views.LoginView.as_view(template_name='instagram/login_page.html'), name="login_page"),
     path('logout/', auth_views.LogoutView.as_view(template_name='instagram/logout_page.html'), name='logout_page'),
-    path('register/', views.register, name='register'),
+    path('register/', views.RegisterView.as_view(), name='register'),
 ]

@@ -122,5 +122,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = 'activity_feed'
+LOGIN_URL = 'login_page'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

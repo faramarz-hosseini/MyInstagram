@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpRequest
 from django.shortcuts import render, redirect
 from .forms import NewUserForm, NewPostForm, UserSearchForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from instagram.models import User, Posts, Profile
+from instagram.models import User, Posts, Profile, Follow
 
 # Create your views here.
 
@@ -109,5 +109,15 @@ def change_visibility(request):
         messages.success(request, 'Your profile visibility was successfully changed to public.')
     profile_info.save()
     return redirect('activity_feed')
+
+
+@login_required
+def follow(request, username):
+    follower_id = request.user
+    following_id = User.objects.filter(username=username).first()
+    follow_rec = Follow.objects.create(follower=follower_id, following=following_id)
+    follow_rec.save()
+    messages.success(request, f'You successfully requested to follow {username}!')
+    return redirect('profile', username)
 
 

@@ -15,6 +15,8 @@
                         <small>Your profile is private. <a href="{% url 'change_visibility' %}">Make it public?</a></small>
                     {% endif %}
                     <p><small><a style="float: top" href="{% url 'new_pass' %}">Change Password</a></small></p>
+                {% elif request.user != username %}
+                    <small><a href="{% url 'follow' username=username %}">Follow</a></small>
                 {% endif %}
             </div>
         </div>

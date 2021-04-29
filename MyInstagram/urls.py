@@ -29,6 +29,7 @@ urlpatterns = [
     path('new_password/', views.change_password, name='new_pass'),
     path('cv/', views.change_visibility, name='change_visibility'),
     path('follow/<str:username>', views.follow, name='follow'),
+    path('unfollow/<str:username>', views.unfollow, name='unfollow'),
     path('register/', views.register, name='register'),
     path('new/', views.new_post, name='new_post'),
     path('profile/<str:username>', views.profile, name='profile'),

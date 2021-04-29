@@ -17,7 +17,11 @@
                     {% endif %}
                     <p><small><a style="float: top" href="{% url 'new_pass' %}">Change Password</a></small></p>
                 {% elif request.user != username %}
-                    <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                    {% if follow_record < 1 %}
+                        <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                    {% else %}
+                        <small><a href="{% url 'unfollow' username=username %}">Unfollow</a></small>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

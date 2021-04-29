@@ -79,11 +79,13 @@ def profile(request, username):
     profile_info = Profile.objects.filter(user=user).first()
     following = Follow.objects.filter(follower=user.id).count()
     followers = Follow.objects.filter(following=user.id).count()
+    follow_record = Follow.objects.filter(follower=request.user.id, following=user.id).count()
     context = {'posts': posts,
                'username': user,
                'profile_info': profile_info,
                'following': following,
                'followers': followers,
+               'follow_record': follow_record,
                }
     return render(request, template_name='instagram/profile.html', context=context)
 
@@ -114,6 +116,7 @@ def followers(request, username):
         "followers": followers
     }
     return render(request, 'instagram/followers.html', context)
+
 
 @login_required
 def change_password(request):
@@ -148,7 +151,17 @@ def follow(request, username):
     following_id = User.objects.filter(username=username).first()
     follow_rec = Follow.objects.create(follower=follower_id, following=following_id)
     follow_rec.save()
-    messages.success(request, f'You successfully requested to follow {username}!')
+    messages.info(request, f'You successfully requested to follow {username}!')
+    return redirect('profile', username)
+
+
+@login_required
+def unfollow(request, username):
+    follower_id = request.user
+    following_id = User.objects.filter(username=username).first()
+    follow_rec = Follow.objects.filter(follower=follower_id, following=following_id).first()
+    follow_rec.delete()
+    messages.info(request, f'{username} was successfully unfollowed.')
     return redirect('profile', username)
 
 

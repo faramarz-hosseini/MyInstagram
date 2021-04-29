@@ -1,12 +1,11 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views import View
-from .forms import NewUserForm
-from django.contrib.auth import login
-from django.contrib import messages
+
+from .forms import NewUserForm, NewPostForm
 
 
-# Create your views here.
 @login_required
 def activity_feed(request):
     return render(request, template_name='instagram/activity_feed.html', context={'title': 'Home!'})
@@ -24,3 +23,19 @@ class RegisterView(View):
     def get(self, request):
         form = NewUserForm
         return render(request, template_name='instagram/register.html', context={'register_form': form})
+
+
+class NewPostView(View):
+    def post(self, request):
+        new_post_form = NewPostForm(request.POST, request.FILES)
+        if new_post_form.is_valid():
+            post = new_post_form.save(commit=False)
+            post.publisher = request.user
+            post.save()
+            messages.success(request, "Your post was successfully published.")
+            return redirect('activity_feed')
+
+    def get(self, request):
+        new_post_form = NewPostForm
+        return render(request, template_name='instagram/new_post.html', context={'new_post_form': new_post_form})
+

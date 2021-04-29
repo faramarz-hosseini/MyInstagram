@@ -77,12 +77,43 @@ def profile(request, username):
         return HttpResponseNotFound('<h1> This user does not exist.</h1>')
     posts = Posts.objects.filter(publisher=user)
     profile_info = Profile.objects.filter(user=user).first()
+    following = Follow.objects.filter(follower=user.id).count()
+    followers = Follow.objects.filter(following=user.id).count()
     context = {'posts': posts,
                'username': user,
-               'profile_info': profile_info
+               'profile_info': profile_info,
+               'following': following,
+               'followers': followers,
                }
     return render(request, template_name='instagram/profile.html', context=context)
 
+
+@login_required
+def following(request, username):
+    user = User.objects.filter(username=username).first()
+    following_list = Follow.objects.filter(follower=user.id)
+    followings = []
+    for obj in following_list:
+        followed_user = User.objects.filter(id=obj.following_id).first()
+        followings.append(followed_user)
+    context = {
+        "followings": followings
+    }
+    return render(request, 'instagram/following.html', context)
+
+
+@login_required
+def followers(request, username):
+    user = User.objects.filter(username=username).first()
+    followers_list = Follow.objects.filter(following=user.id)
+    followers = []
+    for obj in followers_list:
+        following_user = User.objects.filter(id=obj.follower_id).first()
+        followers.append(following_user)
+    context = {
+        "followers": followers
+    }
+    return render(request, 'instagram/followers.html', context)
 
 @login_required
 def change_password(request):

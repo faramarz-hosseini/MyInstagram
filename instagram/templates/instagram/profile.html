@@ -8,6 +8,7 @@
                 <img style="float: left" src="{{ profile_info.profile_pic.url }}" class="clearfix img-fluid rounded-circle mt-2 p-2">
                 <h2>{{ username }}'s Profile</h2>
                 <p>{{ profile_info.bio }}</p>
+                <pre><small><a href="{% url 'followers' username=username %}" style="color: #34012b ">Followers: {{ followers }}</a>    <a href="{% url 'following' username=username %}" style="color:#34012b;">Following: {{ following }}</a></small></pre>
                 {% if request.user == username %}
                     {% if profile_info.is_public %}
                         <small>Your profile is public. <a href="{% url 'change_visibility' %}">Make it private?</a></small>

@@ -32,6 +32,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('new/', views.new_post, name='new_post'),
     path('profile/<str:username>', views.profile, name='profile'),
+    path('profile/<str:username>/follower', views.followers, name='followers'),
+    path('profile/<str:username>/following', views.following, name='following'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

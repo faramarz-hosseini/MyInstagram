@@ -1,0 +1,8 @@
+{% extends 'instagram/base.html' %}
+{% block content %}
+    {% for username in followings %}
+        <ul>
+            <li><a href="{% url 'profile' username %}">{{ username }}</a></li>
+        </ul>
+    {% endfor %}
+{% endblock %}

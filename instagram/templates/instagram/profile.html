@@ -17,10 +17,19 @@
                     {% endif %}
                     <p><small><a style="float: top" href="{% url 'new_pass' %}">Change Password</a></small></p>
                 {% elif request.user != username %}
-                    {% if follow_record < 1 %}
-                        <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                    {% if profile_info.is_public %}
+                        {% if follow_record < 1 %}
+                            <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                        {% else %}
+                            <small><a href="{% url 'unfollow' username=username %}">Unfollow</a></small>
+                        {% endif %}
                     {% else %}
-                        <small><a href="{% url 'unfollow' username=username %}">Unfollow</a></small>
+                        {% if follow_record < 1 %}
+                            <small>This user's profile is set to private. You need to follow them to see their profile.</small>
+                            <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                        {% else %}
+                            <small><a href="{% url 'unfollow' username=username %}">Unfollow</a></small>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             </div>
@@ -28,12 +37,34 @@
     </div>
     <div class="border p-4 m-4">
         <div class="row">
-            {% for post in posts reversed %}
-            <div class="col-4">
-                <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
-            </div>
-            {% endfor %}
+            {% if request.user != username %}
+                {% if profile_info.is_public %}
+                    {% for post in posts reversed %}
+                    <div class="col-4">
+                        <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
+                        <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
+                    </div>
+                    {% endfor %}
+                {% elif not profile_info.is_public and follow_record < 1 %}
+                    <div class="col-4">
+                        <p>This user's pictures are private.</p>
+                    </div>
+                {% else %}
+                    {% for post in posts reversed %}
+                    <div class="col-4">
+                        <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
+                        <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% elif request.user == username %}
+                {% for post in posts reversed %}
+                    <div class="col-4">
+                        <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
+                        <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

@@ -165,3 +165,6 @@ def unfollow(request, username):
     return redirect('profile', username)
 
 
+@login_required
+def notification(request):
+    pass

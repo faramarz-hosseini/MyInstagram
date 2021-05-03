@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path, reverse_lazy
+from django.urls import path
 from instagram import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -31,6 +31,7 @@ urlpatterns = [
     path('follow/<str:username>', views.follow, name='follow'),
     path('unfollow/<str:username>', views.unfollow, name='unfollow'),
     path('accept-follow/<str:user>', views.accept_follow_request, name='accept_follow'),
+    path('decline-follow/<str:user>', views.decline_follow_request, name='decline-follow'),
     path('register/', views.register, name='register'),
     path('new/', views.new_post, name='new_post'),
     path('notifications/', views.notification, name='notification'),

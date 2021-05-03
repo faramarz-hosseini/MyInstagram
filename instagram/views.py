@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseNotFound, HttpRequest
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from .forms import NewUserForm, NewPostForm, UserSearchForm
 from django.contrib.auth import update_session_auth_hash
@@ -189,4 +189,13 @@ def accept_follow_request(request, user):
     follow_request.delete()
     follow_rec.save()
     messages.info(request, f'{user_.username} is now following you.')
+    return redirect('notification')
+
+
+@login_required
+def decline_follow_request(request, user):
+    user_ = User.objects.filter(id=user).first()
+    follow_request = FollowRequest.objects.filter(requester=user_, requested=request.user).first()
+    follow_request.delete()
+    messages.info(request, f"{user_.username}'s follow request was declined.")
     return redirect('notification')

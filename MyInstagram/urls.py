@@ -30,6 +30,7 @@ urlpatterns = [
     path('cv/', views.change_visibility, name='change_visibility'),
     path('follow/<str:username>', views.follow, name='follow'),
     path('unfollow/<str:username>', views.unfollow, name='unfollow'),
+    path('accept-follow/<str:user>', views.accept_follow_request, name='accept_follow'),
     path('register/', views.register, name='register'),
     path('new/', views.new_post, name='new_post'),
     path('notifications/', views.notification, name='notification'),

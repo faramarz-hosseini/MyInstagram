@@ -1,1 +1,26 @@
 {% extends 'instagram/base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-4">
+            <div class="border mt-5 container-fluid rounded-3 p-5">
+                <ul>
+                    {% if follow_requests|length > 0 %}
+                        {% for request in follow_requests %}
+                            <pre>
+                                <p><a href="{% url 'profile' request.requester.username %}">{{ request.requester.username }}</a> requested to follow you.</p>
+                                <small><a href="{% url 'accept_follow' request.requester.id %}">Accept</a></small>
+                                <small><a href="#">Decline</a></small>
+                            </pre>
+                        {% endfor %}
+                    {% else %}
+                        <pre>You don't have any new notifications.</pre>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+{% endblock %}

@@ -5,7 +5,7 @@ from .forms import NewUserForm, NewPostForm, UserSearchForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from instagram.models import User, Posts, Profile, Follow
+from instagram.models import User, Posts, Profile, Follow, FollowRequest
 
 # Create your views here.
 
@@ -147,11 +147,18 @@ def change_visibility(request):
 
 @login_required
 def follow(request, username):
+    user = User.objects.filter(username=username).first()
     follower_id = request.user
     following_id = User.objects.filter(username=username).first()
-    follow_rec = Follow.objects.create(follower=follower_id, following=following_id)
-    follow_rec.save()
-    messages.info(request, f'You successfully requested to follow {username}!')
+    profile_info = Profile.objects.filter(user=user).first()
+    if profile_info.is_public:
+        follow_rec = Follow.objects.create(follower=follower_id, following=following_id)
+        follow_rec.save()
+        messages.info(request, f'You are now following {username}!')
+    elif not profile_info.is_public:
+        follow_request = FollowRequest.objects.create(requester=follower_id, requested=following_id)
+        follow_request.save()
+        messages.info(request, f'You request to follow {username}.')
     return redirect('profile', username)
 
 
@@ -167,4 +174,19 @@ def unfollow(request, username):
 
 @login_required
 def notification(request):
-    pass
+    follow_requests = FollowRequest.objects.filter(requested=request.user)
+    context = {
+        'follow_requests': follow_requests
+    }
+    return render(request, 'instagram/notification.html', context)
+
+
+@login_required
+def accept_follow_request(request, user):
+    user_ = User.objects.filter(id=user).first()
+    follow_request = FollowRequest.objects.filter(requester=user_, requested=request.user).first()
+    follow_rec = Follow.objects.create(follower=user_, following=request.user)
+    follow_request.delete()
+    follow_rec.save()
+    messages.info(request, f'{user_.username} is now following you.')
+    return redirect('notification')

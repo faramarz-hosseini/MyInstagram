@@ -34,3 +34,14 @@ class Follow(models.Model):
     def __str__(self):
         return f'{self.follower} is following {self.following}'
 
+
+class FollowRequest(models.Model):
+    requester = models.ForeignKey(User, related_name='current_requester', on_delete=models.CASCADE)
+    requested = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [['requester', 'requested']]
+
+    def __str__(self):
+        return f'{self.requester} requested to follow {self.requested}'
+

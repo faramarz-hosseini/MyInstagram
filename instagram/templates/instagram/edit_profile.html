@@ -1,0 +1,14 @@
+{% extends 'instagram/profile.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+     <div class="border mt-5 container-fluid rounded-3 p-5">
+        <span style="color: #490030">
+            <h2>Edit your profile</h2>
+            <form enctype="multipart/form-data" method="POST">
+                {% csrf_token %}
+                {{ edit_profile_form|crispy }}
+                <button class="btn btn-outline-dark mt-3" type="submit">Publish</button>
+            </form>
+        </span>
+     </div>
+{% endblock %}

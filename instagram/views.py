@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
-from .forms import NewUserForm, NewPostForm, UserSearchForm
+from .forms import NewUserForm, NewPostForm, UserSearchForm, EditProfileForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from instagram.models import User, Posts, Profile, Follow, FollowRequest
+from django.views import View
 
 # Create your views here.
 
@@ -90,6 +91,12 @@ def profile(request, username):
                'follow_request': follow_request,
                }
     return render(request, template_name='instagram/profile.html', context=context)
+
+
+@login_required
+def edit_profile(request):
+    edit_profile_form = EditProfileForm()
+    return render(request, 'instagram/edit_profile.html', {'edit_profile_form': edit_profile_form})
 
 
 @login_required

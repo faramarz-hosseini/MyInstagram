@@ -25,8 +25,13 @@
                         {% endif %}
                     {% else %}
                         {% if follow_record < 1 %}
-                            <small>This user's profile is set to private. You need to follow them to see their profile.</small>
-                            <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                            {% if follow_request < 1 %}
+                                <small>This user's profile is set to private. You need to follow them to see their profile.</small>
+                                <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                            {% else %}
+                                <small>You've already requested to follow this user.</small>
+                                <small><a href="{% url 'del-request' username=username %}">Delete Request</a></small>
+                            {% endif %}
                         {% else %}
                             <small><a href="{% url 'unfollow' username=username %}">Unfollow</a></small>
                         {% endif %}

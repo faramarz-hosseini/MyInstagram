@@ -80,12 +80,14 @@ def profile(request, username):
     following = Follow.objects.filter(follower=user.id).count()
     followers = Follow.objects.filter(following=user.id).count()
     follow_record = Follow.objects.filter(follower=request.user.id, following=user.id).count()
+    follow_request = FollowRequest.objects.filter(requester=request.user, requested=user).count()
     context = {'posts': posts,
                'username': user,
                'profile_info': profile_info,
                'following': following,
                'followers': followers,
                'follow_record': follow_record,
+               'follow_request': follow_request,
                }
     return render(request, template_name='instagram/profile.html', context=context)
 
@@ -158,7 +160,7 @@ def follow(request, username):
     elif not profile_info.is_public:
         follow_request = FollowRequest.objects.create(requester=follower_id, requested=following_id)
         follow_request.save()
-        messages.info(request, f'You request to follow {username}.')
+        messages.info(request, f'You requested to follow {username}.')
     return redirect('profile', username)
 
 
@@ -179,6 +181,15 @@ def notification(request):
         'follow_requests': follow_requests
     }
     return render(request, 'instagram/notification.html', context)
+
+
+@login_required
+def delete_follow_request(request, username):
+    user_ = User.objects.filter(username=username).first()
+    follow_request = FollowRequest.objects.filter(requester=request.user, requested=user_).first()
+    follow_request.delete()
+    messages.info(request, f"Your request to follow {username} was deleted.")
+    return redirect('profile', username)
 
 
 @login_required

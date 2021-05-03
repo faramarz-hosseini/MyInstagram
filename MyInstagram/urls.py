@@ -32,6 +32,7 @@ urlpatterns = [
     path('unfollow/<str:username>', views.unfollow, name='unfollow'),
     path('accept-follow/<str:user>', views.accept_follow_request, name='accept_follow'),
     path('decline-follow/<str:user>', views.decline_follow_request, name='decline-follow'),
+    path('del-request/<str:username>', views.delete_follow_request, name='del-request'),
     path('register/', views.register, name='register'),
     path('new/', views.new_post, name='new_post'),
     path('notifications/', views.notification, name='notification'),

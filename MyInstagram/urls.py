@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 from instagram import views
 from django.conf import settings
 from django.conf.urls.static import static
+
+from instagram.views import EditProfile
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,7 +42,8 @@ urlpatterns = [
     path('profile/<str:username>', views.profile, name='profile'),
     path('profile/<str:username>/follower', views.followers, name='followers'),
     path('profile/<str:username>/following', views.following, name='following'),
-    path('edit/', views.edit_profile, name='edit'),
+    path('edit/', login_required(EditProfile.as_view()), name='edit'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -77,12 +77,14 @@ def profile(request, username):
     if user is None:
         return HttpResponseNotFound('<h1> This user does not exist.</h1>')
     posts = Posts.objects.filter(publisher=user)
+    posts_num = Posts.objects.filter(publisher=user).count()
     profile_info = Profile.objects.filter(user=user).first()
     following = Follow.objects.filter(follower=user.id).count()
     followers = Follow.objects.filter(following=user.id).count()
     follow_record = Follow.objects.filter(follower=request.user.id, following=user.id).count()
     follow_request = FollowRequest.objects.filter(requester=request.user, requested=user).count()
     context = {'posts': posts,
+               'posts_num': posts_num,
                'username': user,
                'profile_info': profile_info,
                'following': following,
@@ -93,10 +95,18 @@ def profile(request, username):
     return render(request, template_name='instagram/profile.html', context=context)
 
 
-@login_required
-def edit_profile(request):
-    edit_profile_form = EditProfileForm()
-    return render(request, 'instagram/edit_profile.html', {'edit_profile_form': edit_profile_form})
+class EditProfile(View):
+    def post(self, request):
+        _profile = Profile.objects.filter(user=request.user).first()
+        edit_profile_form = EditProfileForm(request.POST, request.FILES, instance=_profile)
+        if edit_profile_form.is_valid():
+            edit_profile_form.save()
+            messages.success(request, 'Changes are saved.')
+        return redirect('profile', request.user.username)
+
+    def get(self, request):
+        edit_profile_form = EditProfileForm()
+        return render(request, 'instagram/edit_profile.html', {'edit_profile_form': edit_profile_form})
 
 
 @login_required

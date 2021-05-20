@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import render, redirect
 from .forms import NewUserForm, NewPostForm, UserSearchForm, EditProfileForm
 from django.contrib.auth import update_session_auth_hash
@@ -13,29 +13,33 @@ from django.views import View
 
 def activity_feed(request):
     if request.user.is_authenticated:
-        if request.method == 'POST':
-            user_search_form = UserSearchForm(request.POST)
-            if user_search_form.is_valid():
-                matched_users = User.objects.filter(username__icontains=user_search_form.cleaned_data.get("search_user"))
-                context = {
-                    "matched_users": matched_users,
-                    "user_search_form": user_search_form,
-                }
-
-                if not matched_users:
-                    context['matched_users'] = 'No user was found!'
-
-                return render(request, 'instagram/search_result.html', context)
-        else:
-            user_search_form = UserSearchForm(initial={'search_user': 'Enter Username...'})
-
         return render(
             request,
             template_name='instagram/activity_feed.html',
-            context={'title': 'Home!', 'user_search_form': user_search_form}
+            context={'title': 'Home!'}
         )
     else:
         return redirect('login_page')
+
+
+class SearchUsers(View):
+    def post(self, request):
+        user_search_form = UserSearchForm(request.POST)
+        if user_search_form.is_valid():
+            matched_users = User.objects.filter(username__icontains=user_search_form.cleaned_data.get("search_user"))
+            context = {
+                "matched_users": matched_users,
+                "user_search_form": user_search_form,
+            }
+
+            if not matched_users:
+                context['matched_users'] = 'No user was found!'
+
+            return render(request, 'instagram/search_result.html', context)
+
+    def get(self, request):
+        user_search_form = UserSearchForm(initial={'search_user': 'Enter Username...'})
+        return render(request, "instagram/search_result.html", {'user_search_form': user_search_form})
 
 
 def register(request):
@@ -227,3 +231,18 @@ def decline_follow_request(request, user):
     follow_request.delete()
     messages.info(request, f"{user_.username}'s follow request was declined.")
     return redirect('notification')
+
+
+def search_result_json(request, search):
+    searched_user = User.objects.filter(username__contains=search)[:5]
+    results = {}
+    user_count = 1
+    for user in searched_user:
+        results[user_count] = {
+            'username': user.username,
+            'profile_pic': user.profile.profile_pic.url,
+            'bio': user.profile.bio
+        }
+        user_count += 1
+
+    return JsonResponse(results)

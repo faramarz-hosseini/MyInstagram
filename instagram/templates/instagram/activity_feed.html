@@ -1,14 +1,6 @@
 {% extends 'instagram/base.html' %}
 {% load crispy_forms_tags %}
 {% block sidebar %}
-    <div class="navbar-nav mx-auto" style="margin-right: 0 !important">
-        <form class="form-inline d-flex" method="POST">
-            {% csrf_token %}
-            {{ user_search_form|crispy }}
-            <input type="submit" value="Search">
-        </form>
-
-    </div>
 {% endblock %}
 {% block content %}
     <h1>Welcome to Activity Feed!</h1>

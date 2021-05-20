@@ -26,7 +26,6 @@ from instagram.views import EditProfile
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.activity_feed, name='activity_feed'),
-    path('search_result/', views.activity_feed, name='search_result'),
     path('login/', auth_views.LoginView.as_view(template_name='instagram/login_page.html'), name="login_page"),
     path('logout/', auth_views.LogoutView.as_view(template_name='instagram/logout_page.html'), name='logout_page'),
     path('new_password/', views.change_password, name='new_pass'),
@@ -43,7 +42,9 @@ urlpatterns = [
     path('profile/<str:username>/follower', views.followers, name='followers'),
     path('profile/<str:username>/following', views.following, name='following'),
     path('edit/', login_required(EditProfile.as_view()), name='edit'),
+    path('searchjson/<str:search>', views.search_result_json, name='search_json'),
+    path('search/', login_required(views.SearchUsers.as_view()), name="SearchUsers")
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

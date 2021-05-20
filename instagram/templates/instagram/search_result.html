@@ -1,37 +1,63 @@
 {% extends 'instagram/base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
-{% block sidebar %}
-    <div class="navbar-nav mx-auto" style="margin-right: 0 !important">
-        <form class="form-inline d-flex" method="POST">
-            {% csrf_token %}
-            {{ user_search_form|crispy }}
-            <input type="submit" value="Search">
-        </form>
 
-    </div>
-{% endblock %}
 {% block content %}
     <div class="row">
             <div class="col-sm-4">
             </div>
             <div class="col-sm-4">
-                <div class="border mt-5 container-fluid rounded-3 p-5">
-                    <span style="color: black">
-                        <ul>
-                            {% if matched_users == 'No user was found!' %}
-                                <p style="color: #490030">{{ matched_users }}</p>
-                            {% else %}
-                                {% for user in matched_users %}
-                                 <li>
-                                     <p><a href="{% url 'profile' user.username %}" style="color: #490030"> {{ user.username }}</a></p>
-                                </li>
-                                {% endfor %}
-                            {% endif %}
-                        </ul>
-                    </span>
+                <div id="main-div" class="border mt-5 container-fluid rounded-3 p-4">
+                    <form id="form" class="form-inline d-flex">
+                        {% csrf_token %}
+                        <label for="username" style="margin-right: 5%; color: #490030">Username:</label>
+                        <input type="text" id="username" name="username" style="color: #490030; width: 100%"><br><br>
+                    </form>
+                    <div id="spinner"></div>
+                    <ul id="contents" style="color: black; margin-top: 5%">
+                    </ul>
                 </div>
             </div>
             <div class="col-sm-4">
             </div>
         </div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    let timer;
+    let data = ''
+    $(document).ready(function (){
+        $("#username").keyup(function () {
+            data = $("#username").val()
+            $('#contents').empty()
+            clearTimeout(timer)
+            timer = setTimeout(() =>{
+                let profile_url = `http://localhost:8000/profile/`
+                let website = `http://localhost:8000`
+                $.ajax({
+                type: 'GET',
+                url: `/searchjson/${data}`,
+                beforeSend: function () {
+                    $('#spinner').append(`<img width="50" height="50" src={% static 'instagram/ClassicImpureKagu-size_restricted.gif' %}>`)
+                },
+                complete: function () {
+                    $('#spinner').empty()
+                },
+                success: (users) => {
+                    if (Object.keys(users).length >= 1) {
+                        for (let key in users){
+                        $("#contents").append(`<img width="80" height="80" class="clearfix img-fluid rounded-circle mt-2 p-2" src="${users[key]["profile_pic"]}">`)
+                        $("#contents").append(`<li class="p-3"><a target="_blank" style="color: black" href='${profile_url}${users[key]["username"]}'>` + users[key]["username"]  + '</a></li>')
+                        $("#contents").append(`<p class="p-1" style="size: A5; color: #490030">${users[key]['bio']}</p>`)
+                    }
+                    } else {
+                        $("#contents").append("<p style='color: black'>No user was found!</p>")
+                    }
+
+                }
+                })
+            }, 1500)
+        })
+        })
+</script>
 {% endblock %}

@@ -45,3 +45,13 @@ class FollowRequest(models.Model):
     def __str__(self):
         return f'{self.requester} requested to follow {self.requested}'
 
+
+class Likes(models.Model):
+    liker = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Posts, related_name='post_id', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [['liker', 'post']]
+
+    def __str__(self):
+        return f'{self.liker} liked {self.post}'

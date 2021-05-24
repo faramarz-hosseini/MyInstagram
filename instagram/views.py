@@ -7,7 +7,7 @@ from .forms import NewUserForm, NewPostForm, UserSearchForm, EditProfileForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from instagram.models import User, Posts, Profile, Follow, FollowRequest
+from instagram.models import User, Posts, Profile, Follow, FollowRequest, Likes
 from django.views import View
 
 from itertools import chain
@@ -44,11 +44,35 @@ def activity_feed_json(request, offset):
             'caption': post.caption,
             'profile_pic': post.publisher.profile.profile_pic.url,
             'date_posted': formats.date_format(post.date_posted, "DATETIME_FORMAT"),
-            'likes': post.likes
+            'likes': post.likes,
+            'id': post.id
         }
         entry += 1
 
     return JsonResponse(results)
+
+
+def likes_handler(request, post_id):
+    if request.method == "GET":
+        post = Posts.objects.filter(id=post_id).first()
+        likes = post.likes
+        try:
+            liked = Likes.objects.get(liker=request.user, post=post)
+            liked.delete()
+            response = {"Success": "Dislike"}
+            if likes > 0:
+                likes -= 1
+                post.save()
+
+        except Likes.DoesNotExist:
+            liked = Likes.objects.create(liker=request.user, post=post)
+            liked.save()
+            response = {"Success": "Like"}
+            likes += 1
+            post.save()
+
+        return JsonResponse(response)
+
 
 
 class SearchUsers(View):

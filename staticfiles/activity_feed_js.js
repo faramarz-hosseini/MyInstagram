@@ -12,7 +12,7 @@ let offset = 0;
                     success: function (posts) {
                         for (let post in posts){
                             $("#posts").append(`<div class="border mt-5 container-fluid rounded-3 p-5">
-                                    <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  ${posts[post]['publisher']}
+                                    <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  <a style="color: #490030" href=http://localhost:8000/profile/${posts[post]['publisher']}>${posts[post]['publisher']}</a>
 
 Posted: ${posts[post]['date_posted']}
                                     </pre>
@@ -50,7 +50,6 @@ Posted: ${posts[post]['date_posted']}
                                 </div>`
                             )
                         }
-                        initialize = false
                         offset += 5
                     }
                 })

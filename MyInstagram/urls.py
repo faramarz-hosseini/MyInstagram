@@ -43,7 +43,8 @@ urlpatterns = [
     path('profile/<str:username>/following', views.following, name='following'),
     path('edit/', login_required(EditProfile.as_view()), name='edit'),
     path('searchjson/<str:search>', views.search_result_json, name='search_json'),
-    path('search/', login_required(views.SearchUsers.as_view()), name="SearchUsers")
+    path('search/', login_required(views.SearchUsers.as_view()), name="SearchUsers"),
+    path('activity-feed-json/<int:offset>', views.activity_feed_json, name='activity_feed_json')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

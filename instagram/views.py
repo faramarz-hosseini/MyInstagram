@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import render, redirect
+from django.utils import formats
+
 from .forms import NewUserForm, NewPostForm, UserSearchForm, EditProfileForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -8,6 +10,7 @@ from django.contrib import messages
 from instagram.models import User, Posts, Profile, Follow, FollowRequest
 from django.views import View
 
+from itertools import chain
 # Create your views here.
 
 
@@ -20,6 +23,32 @@ def activity_feed(request):
         )
     else:
         return redirect('login_page')
+
+
+def activity_feed_json(request, offset):
+    querysets = Posts.objects.none()
+    profile_pics = []
+    results = {}
+    entry = 1
+    user_followed = Follow.objects.filter(follower=request.user)
+    for obj in user_followed:
+        user = User.objects.filter(username=obj.following).first()
+        profile_pics.append(user.profile.profile_pic.url)
+        posts_ = user.posts_set.all().order_by('-date_posted')[:5]
+        querysets = querysets | posts_
+    posts = querysets.order_by('-date_posted')[offset:offset+5]
+    for post in posts:
+        results[entry] = {
+            'publisher': post.publisher.username,
+            'post': post.picture.url,
+            'caption': post.caption,
+            'profile_pic': post.publisher.profile.profile_pic.url,
+            'date_posted': formats.date_format(post.date_posted, "DATETIME_FORMAT"),
+            'likes': post.likes
+        }
+        entry += 1
+
+    return JsonResponse(results)
 
 
 class SearchUsers(View):

@@ -21,6 +21,26 @@
 
 {% block js %}
     <script type="text/javascript">
+        function like(likes, like_id, post_id) {
+            console.log('in like function')
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/likes/${post_id}`,
+                success: function (result){
+                    if (result['Success'] === "Like") {
+                        let new_likes = likes + 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'red');
+                    } else if (result['Success'] === "Dislike"){
+                        let new_likes = likes - 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'black');
+                    }
+                }
+            })
+        }
+        let div_id = 1;
+        let like_id = 1;
         let offset = 0;
         let allowed_ajax_calls = 0;
         $(document).ready(function () {
@@ -35,16 +55,23 @@
                     },
                     success: function (posts) {
                         for (let post in posts){
-                            $("#posts").append(`<div class="border mt-5 container-fluid rounded-3 p-5">
+                            $("#posts").append(`<div id="${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
                                     <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  <a style="color: #490030" href=http://localhost:8000/profile/${posts[post]['publisher']}>${posts[post]['publisher']}</a>
 
 Posted: ${posts[post]['date_posted']}
                                     </pre>
-                                    <img class="mb-1" width="90%" src=${posts[post]['post']}>
-                                    <p class="mt-4">${posts[post]['likes']} likes</p>
+                                    <img class="mb-1" width="90%" src=${posts[post]['post']}>`)
+                            if (posts[post]['liked'] === false){
+                                $(`#${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
                                     <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
-                                </div>`
-                            )
+                                </div>`)
+                            } else if (posts[post]['liked'] === true){
+                                $(`#${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                    <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
+                                </div>`)
+                            }
+                            like_id += 1;
+                            div_id += 1;
                         }
                         offset += 5
                     }
@@ -63,16 +90,23 @@ Posted: ${posts[post]['date_posted']}
                     },
                     success: function (posts) {
                         for (let post in posts){
-                            $("#posts").append(`<div class="border mt-5 container-fluid rounded-3 p-5">
-                                    <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  ${posts[post]['publisher']}
+                            $("#posts").append(`<div id="${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
+                                    <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  <a style="color: #490030" href=http://localhost:8000/profile/${posts[post]['publisher']}>${posts[post]['publisher']}</a>
 
 Posted: ${posts[post]['date_posted']}
                                     </pre>
-                                    <img class="mb-1" width="90%" src=${posts[post]['post']}>
-                                    <p class="mt-4">${posts[post]['likes']} likes</p>
-                                    <p class="mt-4"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
-                                </div>`
-                            )
+                                    <img class="mb-1" width="90%" src=${posts[post]['post']}>`)
+                            if (posts[post]['liked'] === false){
+                                $(`#${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                    <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
+                                </div>`)
+                            } else if (posts[post]['liked'] === true){
+                                $(`#${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                    <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
+                                </div>`)
+                            }
+                            like_id += 1;
+                            div_id += 1;
                         }
                         offset += 5
                         allowed_ajax_calls += 1
@@ -80,7 +114,7 @@ Posted: ${posts[post]['date_posted']}
                 })
             } else if (allowed_ajax_calls === 4){
                 allowed_ajax_calls += 1
-                $("#posts").append("<h3 style='color: #490030; margin-inline-start: 50%; margin-block-start: 2rem'>You've Seen All Recent Posts!</h3>")
+                $("#posts").append("<h3 style='color: #490030; margin-inline-start: 15%; margin-block-start: 2rem'>You've Seen All Recent Posts!</h3>")
             }
         });
     </script>

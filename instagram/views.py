@@ -45,34 +45,38 @@ def activity_feed_json(request, offset):
             'profile_pic': post.publisher.profile.profile_pic.url,
             'date_posted': formats.date_format(post.date_posted, "DATETIME_FORMAT"),
             'likes': post.likes,
-            'id': post.id
+            'id': post.id,
+            'liked': False,
         }
-        entry += 1
+        try:
+            Likes.objects.get(liker=request.user, post=post)
+            results[entry]['liked'] = True
+            entry += 1
+        except Likes.DoesNotExist:
+            entry += 1
 
     return JsonResponse(results)
 
 
 def likes_handler(request, post_id):
-    if request.method == "GET":
+    if request.method == "GET" and request.is_ajax():
         post = Posts.objects.filter(id=post_id).first()
-        likes = post.likes
         try:
             liked = Likes.objects.get(liker=request.user, post=post)
             liked.delete()
             response = {"Success": "Dislike"}
-            if likes > 0:
-                likes -= 1
+            if post.likes > 0:
+                post.likes -= 1
                 post.save()
 
         except Likes.DoesNotExist:
             liked = Likes.objects.create(liker=request.user, post=post)
             liked.save()
             response = {"Success": "Like"}
-            likes += 1
+            post.likes += 1
             post.save()
 
         return JsonResponse(response)
-
 
 
 class SearchUsers(View):

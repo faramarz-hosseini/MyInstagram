@@ -45,7 +45,8 @@ urlpatterns = [
     path('searchjson/<str:search>', views.search_result_json, name='search_json'),
     path('search/', login_required(views.SearchUsers.as_view()), name="SearchUsers"),
     path('activity-feed-json/<int:offset>', views.activity_feed_json, name='activity_feed_json'),
-    path('likes/<int:post_id>', views.likes_handler, name='likes_handler')
+    path('likes/<int:post_id>', views.likes_handler, name='likes_handler'),
+    path('post-info/<int:post_id>', views.post_info_api, name='post_info')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

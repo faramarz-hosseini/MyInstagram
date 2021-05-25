@@ -79,6 +79,12 @@ def likes_handler(request, post_id):
         return JsonResponse(response)
 
 
+def post_info_api(request, post_id):
+    post = Posts.objects.get(pk=post_id)
+
+    return JsonResponse({"Info": {'likes': post.likes}})
+
+
 class SearchUsers(View):
     def post(self, request):
         user_search_form = UserSearchForm(request.POST)

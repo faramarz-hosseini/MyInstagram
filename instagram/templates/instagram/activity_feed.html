@@ -21,8 +21,15 @@
 
 {% block js %}
     <script type="text/javascript">
+        let likes = 0
         function like(likes, like_id, post_id) {
-            console.log('in like function')
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/post-info/${post_id}`,
+                success: function (info) {
+                    likes = info['Info']['likes']
+                }
+            })
             $.ajax({
                 type: 'GET',
                 url: `http://localhost:8000/likes/${post_id}`,
@@ -55,18 +62,18 @@
                     },
                     success: function (posts) {
                         for (let post in posts){
-                            $("#posts").append(`<div id="${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
+                            $("#posts").append(`<div id="d${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
                                     <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  <a style="color: #490030" href=http://localhost:8000/profile/${posts[post]['publisher']}>${posts[post]['publisher']}</a>
 
 Posted: ${posts[post]['date_posted']}
                                     </pre>
                                     <img class="mb-1" width="90%" src=${posts[post]['post']}>`)
                             if (posts[post]['liked'] === false){
-                                $(`#${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                $(`#d${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
                                     <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
                                 </div>`)
                             } else if (posts[post]['liked'] === true){
-                                $(`#${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                $(`#d${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
                                     <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
                                 </div>`)
                             }
@@ -90,18 +97,18 @@ Posted: ${posts[post]['date_posted']}
                     },
                     success: function (posts) {
                         for (let post in posts){
-                            $("#posts").append(`<div id="${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
+                            $("#posts").append(`<div id="d${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
                                     <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  <a style="color: #490030" href=http://localhost:8000/profile/${posts[post]['publisher']}>${posts[post]['publisher']}</a>
 
 Posted: ${posts[post]['date_posted']}
                                     </pre>
                                     <img class="mb-1" width="90%" src=${posts[post]['post']}>`)
                             if (posts[post]['liked'] === false){
-                                $(`#${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                $(`#d${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
                                     <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
                                 </div>`)
                             } else if (posts[post]['liked'] === true){
-                                $(`#${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                $(`#d${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
                                     <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
                                 </div>`)
                             }

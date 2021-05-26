@@ -48,7 +48,7 @@
                             {% for post in posts reversed %}
                             <div class="col-4">
                                 <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} likes</small>
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} Likes</small>
                             </div>
                             {% endfor %}
                         {% endif %}
@@ -63,7 +63,7 @@
                             {% for post in posts reversed %}
                             <div class="col-4">
                                 <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} likes</small>
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} Likes</small>
                             </div>
                             {% endfor %}
                         {% endif %}
@@ -75,7 +75,7 @@
                         {% for post in posts reversed %}
                             <div class="col-4">
                                 <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} likes</small>
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} Likes</small>
                             </div>
                         {% endfor %}
                     {% endif %}

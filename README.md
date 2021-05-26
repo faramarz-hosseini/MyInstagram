@@ -5,6 +5,11 @@ posts that were published by people they follow in the website's activity feed. 
 Posts visible in the activity feed or any profile can be liked by by users using AJAX calls and JQuery to manipulate the DOM. 
 <br></br>
 <br></br>
+## Setup
+```python
+
+```
+
 ## Technology Stack
 <ul>
 <li>Django (Python)</li>

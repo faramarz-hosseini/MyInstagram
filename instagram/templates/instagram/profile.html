@@ -48,7 +48,7 @@
                             {% for post in posts reversed %}
                             <div class="col-4">
                                 <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                                <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} likes</small>
                             </div>
                             {% endfor %}
                         {% endif %}
@@ -63,7 +63,7 @@
                             {% for post in posts reversed %}
                             <div class="col-4">
                                 <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                                <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} likes</small>
                             </div>
                             {% endfor %}
                         {% endif %}
@@ -75,7 +75,7 @@
                         {% for post in posts reversed %}
                             <div class="col-4">
                                 <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                                <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} likes</small>
                             </div>
                         {% endfor %}
                     {% endif %}
@@ -84,7 +84,45 @@
         </div>
     {% endblock %}
 
-    <script type="text/javascript">
 
-    </script>
 </body>
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let elems = document.getElementsByClassName('likes');
+            for (i=0;i<elems.length;i++) {
+                elems[i].setAttribute('id', `${like_id}`);
+                like_id += 1
+            }
+        })
+    </script>
+    <script type="text/javascript">
+        let like_id = 1;
+        let likes = 0;
+
+        function like(likes, like_id, post_id) {
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/post-info/${post_id}`,
+                success: function (info) {
+                    likes = info['Info']['likes']
+                }
+            })
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/likes/${post_id}`,
+                success: function (result){
+                    if (result['Success'] === "Like") {
+                        let new_likes = likes + 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'red');
+                    } else if (result['Success'] === "Dislike"){
+                        let new_likes = likes - 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'black');
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}

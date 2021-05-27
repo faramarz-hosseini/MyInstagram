@@ -31,12 +31,17 @@ Run server:
 python manage.py runserver
 ```
 ## Endpoints
-<li><strong>/ :</strong> Activity</li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
+<ul>
+<li><strong>register/:</strong> Sign up page. Users can create accounts for themselves here.
+<li><strong>login/:</strong> Users are redirected to this address at arrival. (No one can use the website without having logged in.)</li>
+<li><strong>/:</strong> Activity feed, the home page of the website where useres can see and like posts published by people they follow</li>
+<li><strong>profile/<str:username>:</strong> A specific user's profile. Users can see their and other people's profiles here. They can also edit their profile and follow, unfollow others. Posts published by the owner of the profile are also visible here and can be interacted with via liking/disliking.</li>
+<li><strong>/:</strong> While accessing this endpoint, users can publish new posts. They do this by submitting a photo and description (caption) for their post.</li>
+<li><strong>notifications/:</strong> Users who have requested to follow others with private profiles, will have their requests shown here <strong>for the user they have request to follow.</strong></li> 
+<li><strong>search/:</strong> Users can search for other users via a textbox here. The input from the textbox is fetched using JS, and results are shown on the page using JQuery and AJAX.
+<li><strong>... And a lot more!</strong></li>
+</ul>
+<br>
 
 ## Technology Stack
 <ul>

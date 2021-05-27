@@ -30,9 +30,13 @@ Run server:
 ```bash
 python manage.py runserver
 ```
-<br></br>
 ## Endpoints
-
+<li><strong>/ :</strong> Activity</li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
 
 ## Technology Stack
 <ul>

@@ -1,4 +1,128 @@
 {% extends 'instagram/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block sidebar %}
+{% endblock %}
 {% block content %}
-    <h1>Welcome to Activity Feed!</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-2">
+            </div>
+            <div class="col-xl-8">
+                <div id="posts" class="border mt-5 container-fluid rounded-3 p-5">
+                    <h1 style="caption-side: top; color: #490030">Recent Activity</h1>
+                </div>
+            </div>
+            <div class="col-xl-2">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        let likes = 0
+        function like(likes, like_id, post_id) {
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/post-info/${post_id}`,
+                success: function (info) {
+                    likes = info['Info']['likes']
+                }
+            })
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/likes/${post_id}`,
+                success: function (result){
+                    if (result['Success'] === "Like") {
+                        let new_likes = likes + 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'red');
+                    } else if (result['Success'] === "Dislike"){
+                        let new_likes = likes - 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'black');
+                    }
+                }
+            })
+        }
+        let div_id = 1;
+        let like_id = 1;
+        let offset = 0;
+        let allowed_ajax_calls = 0;
+        $(document).ready(function () {
+            $.ajax({
+                    type: "GET",
+                    url: `http://localhost:8000/activity-feed-json/${offset}`,
+                    beforeSend: function () {
+                        $("#posts").append(`<img class='spinner1' width="50" height="50" src="http://localhost:8000/static/instagram/ClassicImpureKagu-size_restricted.gif">`)
+                    },
+                    complete: function () {
+                        $(".spinner1").hide()
+                    },
+                    success: function (posts) {
+                        for (let post in posts){
+                            $("#posts").append(`<div id="d${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
+                                    <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  <a style="color: #490030" href=http://localhost:8000/profile/${posts[post]['publisher']}>${posts[post]['publisher']}</a>
+
+Posted: ${posts[post]['date_posted']}
+                                    </pre>
+                                    <img class="mb-1" width="90%" src=${posts[post]['post']}>`)
+                            if (posts[post]['liked'] === false){
+                                $(`#d${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                    <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
+                                </div>`)
+                            } else if (posts[post]['liked'] === true){
+                                $(`#d${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                    <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
+                                </div>`)
+                            }
+                            like_id += 1;
+                            div_id += 1;
+                        }
+                        offset += 5
+                    }
+                })
+        })
+        $(window).scroll(function() {
+            if ($(window).scrollTop() + $(window).height() === $(document).height() && allowed_ajax_calls < 4){
+                $.ajax({
+                    type: "GET",
+                    url: `http://localhost:8000/activity-feed-json/${offset}`,
+                    beforeSend: function () {
+                        $("#posts").append(`<img class='spinner1' width="50" height="50" src={% static 'instagram/ClassicImpureKagu-size_restricted.gif' %}>`)
+                    },
+                    complete: function () {
+                        $(".spinner1").hide()
+                    },
+                    success: function (posts) {
+                        for (let post in posts){
+                            $("#posts").append(`<div id="d${div_id}" class="border mt-5 container-fluid rounded-3 p-5">
+                                    <pre><img width="80" height="80" class="clearfix img-fluid rounded-circle mt-4" src=${posts[post]["profile_pic"]}>  <a style="color: #490030" href=http://localhost:8000/profile/${posts[post]['publisher']}>${posts[post]['publisher']}</a>
+
+Posted: ${posts[post]['date_posted']}
+                                    </pre>
+                                    <img class="mb-1" width="90%" src=${posts[post]['post']}>`)
+                            if (posts[post]['liked'] === false){
+                                $(`#d${div_id}`).append(`<p id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                    <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
+                                </div>`)
+                            } else if (posts[post]['liked'] === true){
+                                $(`#d${div_id}`).append(`<p style="color: red" id="${like_id}" class="mt-4" onclick="like(${posts[post]['likes']}, this.id, ${posts[post]['id']})">${posts[post]['likes']} Likes</p>
+                                    <p class="mt-14"><strong>${posts[post]['publisher']}:</strong>  ${posts[post]['caption']}</p>
+                                </div>`)
+                            }
+                            like_id += 1;
+                            div_id += 1;
+                        }
+                        offset += 5
+                        allowed_ajax_calls += 1
+                    }
+                })
+            } else if (allowed_ajax_calls === 4){
+                allowed_ajax_calls += 1
+                $("#posts").append("<h3 style='color: #490030; margin-inline-start: 15%; margin-block-start: 2rem'>You've Seen All Recent Posts!</h3>")
+            }
+        });
+    </script>
 {% endblock %}

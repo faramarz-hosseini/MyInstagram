@@ -1,25 +1,128 @@
 {% extends 'instagram/base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
-{% block content %}
-    <div class="border p-4 m-4">
-        <div class="row">
-            <div class="container-fluid">
-                <h2>{{ username }}'s Profile</h2>
-                {% if request.user == username %}
-                    <small><a href="{% url 'new_pass' %}">Change Password</a></small>
+<body>
+    {% block content %}
+        <div class="border p-4 m-4">
+            <div class="row">
+                <div class="container-fluid">
+                    <img style="float: left" height="266" width="266" src="{{ profile_info.profile_pic.url }}" class="clearfix img-fluid rounded-circle mt-2 p-2">
+                    <h2>{{ username }}'s Profile</h2>
+                    <p>{{ profile_info.bio }}</p>
+                    <pre><small><a href="{% url 'followers' username=username %}" style="color: #34012b ">Followers: {{ followers }}</a>    <a href="{% url 'following' username=username %}" style="color:#34012b;">Following: {{ following }}</a></small></pre>
+                    {% if request.user == username %}
+                        <form action="{% url 'edit' %}">
+                            <input type="submit" value="Edit Profile" />
+                        </form>
+                    {% elif request.user != username %}
+                        {% if profile_info.is_public %}
+                            {% if follow_record < 1 %}
+                                <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                            {% else %}
+                                <small><a href="{% url 'unfollow' username=username %}">Unfollow</a></small>
+                            {% endif %}
+                        {% else %}
+                            {% if follow_record < 1 %}
+                                {% if follow_request < 1 %}
+                                    <small>This user's profile is set to private. You need to follow them to see their profile.</small>
+                                    <small><a href="{% url 'follow' username=username %}">Follow</a></small>
+                                {% else %}
+                                    <small>You've already requested to follow this user.</small>
+                                    <small><a href="{% url 'del-request' username=username %}">Delete Request</a></small>
+                                {% endif %}
+                            {% else %}
+                                <small><a href="{% url 'unfollow' username=username %}">Unfollow</a></small>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="border p-4 m-4">
+            <div class="row">
+                {% if request.user != username %}
+                    {% if profile_info.is_public %}
+                        {% if posts_num < 1 %}
+                            <p>This user has not posted anything.</p>
+                        {% else %}
+                            {% for post in posts reversed %}
+                            <div class="col-4">
+                                <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} Likes</small>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% elif not profile_info.is_public and follow_record < 1 %}
+                        <div class="col-4">
+                            <p>This user's pictures are private.</p>
+                        </div>
+                    {% else %}
+                        {% if posts_num < 1 %}
+                            <p>This user has not posted anything.</p>
+                        {% else %}
+                            {% for post in posts reversed %}
+                            <div class="col-4">
+                                <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} Likes</small>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                {% elif request.user == username %}
+                    {% if posts_num < 1 %}
+                        <p>You haven't posted anything</p>
+                    {% else %}
+                        {% for post in posts reversed %}
+                            <div class="col-4">
+                                <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
+                                <p class="p-2">{{ post.caption }}</p><small class="likes p-2" onclick="like({{ post.likes }}, this.id, {{ post.id }})">{{ post.likes }} Likes</small>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
-    </div>
-    <div class="border p-4 m-4">
-        <div class="row">
-            {% for post in posts reversed %}
-            <div class="col-4">
-                <img width="700" src="{{ post.picture.url }}" class="clearfix img-fluid img-thumbnail rounded-3 mt-2">
-                <p class="p-2">{{ post.caption }}</p><small class="p-2">{{ post.likes }} likes</small>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+    {% endblock %}
+
+
+</body>
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let elems = document.getElementsByClassName('likes');
+            for (i=0;i<elems.length;i++) {
+                elems[i].setAttribute('id', `${like_id}`);
+                like_id += 1
+            }
+        })
+    </script>
+    <script type="text/javascript">
+        let like_id = 1;
+        let likes = 0;
+
+        function like(likes, like_id, post_id) {
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/post-info/${post_id}`,
+                success: function (info) {
+                    likes = info['Info']['likes']
+                }
+            })
+            $.ajax({
+                type: 'GET',
+                url: `http://localhost:8000/likes/${post_id}`,
+                success: function (result){
+                    if (result['Success'] === "Like") {
+                        let new_likes = likes + 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'red');
+                    } else if (result['Success'] === "Dislike"){
+                        let new_likes = likes - 1;
+                        $(`#${like_id}`).text(`${new_likes} Likes`);
+                        $(`#${like_id}`).css('color', 'black');
+                    }
+                }
+            })
+        }
+    </script>
 {% endblock %}
